@@ -1,0 +1,9 @@
+## Dependencies
+### Base
+* `luasocket`
+* `lua-websockets`
+* `lua-ev`
+* `luasec`
+* `rapidjson`
+### Client
+* `lcurses`
