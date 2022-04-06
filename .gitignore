@@ -1,2 +1,6 @@
 CREDENTIALS
-lua_modules
+.luarocks/luarocks
+/lua
+/lua_modules
+/.luarocks
+/luarocks
