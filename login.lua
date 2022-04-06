@@ -1,5 +1,4 @@
 local json = require "rapidjson"
-local https = require "ssl.https"
 local http = require "http.request"
 
 local encode = function(str) 

@@ -1,5 +1,3 @@
-local utils = require "utils"
-
 -- create a "message" class to store a message's text, sender, timestamp, room, and whether it's a private message
 local methods = {}
 local mt = {__index = methods}
