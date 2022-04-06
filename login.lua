@@ -1,5 +1,6 @@
 local json = require "rapidjson"
 local https = require "ssl.https"
+local http = require "http.request"
 
 local encode = function(str) 
   if str then
@@ -22,7 +23,11 @@ local get = function(url, t) -- perform a GET request
 		s = s .. item -- add the parameter to the query string
 	end
 	s = s:match("^(.-)%&$") -- remove the trailing &
-	return https.request(url .. s), url..s -- return the request result and the url
+	local req = http.new_from_uri(url .. s) -- create the request
+	local headers, stream = req:go() -- send the request
+	-- TODO: handle errors
+	local body = stream:get_body_as_string() -- get the response body
+	return body -- return the response body
 end
 
 local post = function(url, body) -- perform a POST request
@@ -31,7 +36,14 @@ local post = function(url, body) -- perform a POST request
 		local p = (b == "") and "" or "&" -- add a & to the body if not the first parameter
 		b = b .. p .. encode(i) .. "=" .. encode(v) -- add the parameter to the body
 	end
-	return https.request(url, b) -- return the request result
+	local req = http.new_from_uri(url) -- create the request
+	req.headers:upsert(":method", "POST") -- set the method to POST
+	req.headers:upsert("content-type", "application/x-www-form-urlencoded") -- set the content-type
+	req:set_body(b) -- set the body
+	local headers, stream = req:go() -- send the request
+	-- TODO: handle errors
+	local body = stream:get_body_as_string() -- get the response body
+	return body -- return the request result
 end
 
 local login = function(client) -- attempt to login
@@ -45,12 +57,12 @@ local login = function(client) -- attempt to login
 	    if data:sub(1, 1) ~= "]" then -- if the login failed
 	    	print("Error. Aborting.")
 	    	print(data)
-	    	os.exit() -- TODO: handle gracefully, though I'm not even sure if this can happen anymore
+	    	os.exit() -- TODO: handle gracefully, though I'm not even sure if this can happen anymore. EDIT: it can happen, on invalid requests.
 	    end
 	    data = json.decode(data:sub(2, -1)) -- decode the JSON data
 	    if data.actionsuccess then -- if the login was successful
 	 	    assertion = data.assertion -- get the assertion
-			client:rawSend("|/trn " .. (t.name or t.userid) .. ",0," .. assertion) -- send the login command
+			client:send("|/trn " .. (t.name or t.userid) .. ",0," .. assertion) -- send the login command
 		else
 			-- TODO: could not log in. Handle gracefully.
 			print("Login failed.")

@@ -11,6 +11,9 @@ local room = function(self, id) -- Create a new room.
 	t.ranks = {} -- Create a table to store the user ranks.
 	t.messages = {} -- Create a table to store the messages.
 	t.ps = self
+
+	t.joinTimestamp = 0
+
 	t.callbacks = {}
 	-- create callbacks for "join", "leave", "message", "log"
 	t.callbacks.join = Callbacks:new()
@@ -31,6 +34,10 @@ end
 
 methods.setType = function(self, type) -- Set the room's type.
 	self.type = type
+end
+
+methods.setJoinTimestamp = function(self, timestamp) -- Set the room's join timestamp.
+	self.joinTimestamp = timestamp
 end
 
 methods.setUserRank = function(self, user, rank) -- Set the rank of a user.
@@ -64,6 +71,10 @@ methods.leave = function(self, user) -- A user left the room.
 		end
 	end
 	self.ranks[user.id] = nil -- Remove the user's rank.
+end
+
+methods.send = function(self, text) -- Send a message to the room.
+	self.ps:send(self.id .. "|" .. text)
 end
 
 return room -- Return the room module.

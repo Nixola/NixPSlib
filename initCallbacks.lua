@@ -18,19 +18,17 @@ local initCallbacks = function(self)
 	self.rawCallbacks = setmetatable({}, {__index = function(self, name) self[name] = Callbacks:new(); return self[name]; end}) -- Create a new callbacks table.
 	-- TODO: find a better name for "raw" callbacks (which are callbacks for server messages, really)
 
-	self.websocket:on_open(function() -- When the websocket is opened.
-		--self.callbacks.connect:fire() -- Fire the connect callback.
-	end)
-
+	--[[
 	self.websocket:on_message(function(websocket, message) -- When a server message is received.
 		self.callbacks.messageBundle:fire(message) -- Fire the callback for a bundle of messages.
 	end)
+	--]]
 
     self.callbacks.messageBundle:register(function(message) -- When a message bundle is received.
 		local roomID = message:match("^>(.-)\n") -- Get the room name.
 		local messages
 		if roomID then -- If the server sent a room name.
-			messages = message:match("^.-\n(.-)") -- Remove the room name from the messages.
+			messages = message:match("^>.-\n(.+)") -- Remove the room name from the messages.
 		else
 			messages = message -- Otherwise, just use the whole message.
 			roomID = "lobby" -- And set the room name to lobby.
@@ -55,6 +53,7 @@ local initCallbacks = function(self)
 	end)
 
 	self.rawCallbacks.updateuser:register(function(room, name, registered, avatar, settings) -- When the user is updated.
+		self.users:changeName(self.self, name)
 		self.self.name = name -- Set the nick.
 		self.self.id = Utils.userID(name) -- Set the user ID.
 		self.self.registered = registered -- Set the registered status.
@@ -66,52 +65,63 @@ local initCallbacks = function(self)
 
 	-- register a callback for the "c:" command, taking as arguments the room, timestamp, user, and message
 	self.rawCallbacks["c:"]:register(function(room, timestamp, userID, ...)
+		timestamp = tonumber(timestamp)
 		-- join the vararg as a string with "|" as the separator
 		local text = table.concat({...}, "|")
-		local sender = self.userlist:getUser(userID) -- Get the user.
-		room:message(sender, timestamp, message) -- Send the message to the room.
+		local sender = self.users:getUser(userID) -- Get the user.
+		local message = self:Message(text, sender, timestamp, room) -- Create a new message.
+		room:message(message) -- Send the message to the room.
         self.callbacks.chat:fire(message)
 	end)
 
 	-- register a callback for the "c" command, taking as arguments the room, user, and message; instead, fire the "c:" callback, passing the current time as timestamp
 	self.rawCallbacks["c"]:register(function(room, userID, ...)
-		self.rawCallbacks["c:"]:fire(room, os.time(), userID, message) -- Fire the "c:" callback.
+		self.rawCallbacks["c:"]:fire(room, os.time(), userID, ...) -- Fire the "c:" callback.
+	end)
+
+	-- register a callback for the ":" command, taking as arguments the room and timestamp, storing the latter into the former as a number
+	self.rawCallbacks[":"]:register(function(room, timestamp)
+		room:setJoinTimestamp(tonumber(timestamp))
 	end)
 
 	-- register a callback for the "pm" command, taking as arguments the sender, the recipient, and the message
 	self.rawCallbacks["pm"]:register(function(room, senderID, recipientID, ...)
 		-- join the vararg as a string with "|" as the separator
-		local message = table.concat({...}, "|")
-		local sender = self.userlist:getUser(senderID) -- Get the sender.
-		local recipient = self.userlist:getUser(recipientID) -- Get the recipient.
+		local text = table.concat({...}, "|")
+		local sender = self.users:getUser(senderID) -- Get the sender.
+		local recipient = self.users:getUser(recipientID) -- Get the recipient.
 
-		if senderID == self.self.id then -- If the sender is the user.
+		local message = self:Message(text, sender, os.time(), nil, recipient) -- Create a new message.
+
+		if message.self then -- If the sender is the user.
 			recipient:message(sender, os.time(), message)
 		else
 			sender:message(sender, os.time(), message)
 		end
-
+		self.callbacks.chat:fire(message)
 	end)
 
 	-- register a callback for the "j" command, taking as arguments the room and user ID
 	self.rawCallbacks["j"]:register(function(room, userID)
-		local user = self.userlist:getUser(userID) -- Get the user.
+		local user = self.users:getUser(userID) -- Get the user.
 		local room = self.rooms[roomID] -- Get the room.
 		room:join(user) -- Join the room.
 		user:join(room)
+		self.callbacks.join:fire(user, room) -- Fire the join callback.
 	end)
 
 	-- register a callback for the "l" command, taking as arguments the room and user ID
 	self.rawCallbacks["l"]:register(function(room, userID)
-		local user = self.userlist:getUser(userID) -- Get the user.
+		local user = self.users:getUser(userID) -- Get the user.
 		local room = self.rooms[roomID] -- Get the room.
 		room:leave(user) -- Leave the room.
 		user:leave(room)
+		self.callbacks.leave:fire(user, room) -- Fire the leave callback.
 	end)
 
 	-- register a callback for the "n" command, taking as arguments the room, the user's new username and the old user ID
 	self.rawCallbacks["n"]:register(function(room, newUsername, oldUserID)
-		local user = self.userlist:getUser(oldUserID) -- Get the user.
+		local user = self.users:getUser(oldUserID) -- Get the user.
 		self.userlist:changeName(user, newUsername) -- Change the user's name.
 	end)
 
@@ -134,7 +144,7 @@ local initCallbacks = function(self)
             -- the first character is the rank, the rest is the name; optionally, the name ends by @ followed by ! if the user is away, then maybe the user status
             -- TODO: this _needs_ to be UTF-8 aware!
             local rank, name, away, status = name:match("^(.)(.+)@?(%!?)(.*)$")
-            local user = self.userlist:getUser(name) -- get the user
+            local user = self.users:getUser(name) -- get the user
             room:join(user, rank, true) -- join the room without firing a callback, as the user already is in the room
             user:join(room)
         end

@@ -12,11 +12,11 @@ local userlist = function(self)
 end
 
 methods.getUser = function(self, username)
-    local userID = utils.userID(username)
+    local userID = Utils.userID(username)
 	local user = self.users[userID]
     -- if the user doesn't exist, create a new user
     if user == nil then
-        user = ps:User(username)
+        user = self.ps:User(username)
         self.users[userID] = user
     end
     return user

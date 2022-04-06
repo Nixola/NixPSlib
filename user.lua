@@ -16,6 +16,7 @@ end
 methods.changeName = function(self, name) -- Change the user's name.
     self.name = name -- Set the user's name.
     self.id = utils.userID(name) -- Set the user's ID.
+    -- TODO: fire use-specific callback
     return self.id
 end
 
@@ -32,6 +33,17 @@ end
 methods.leave = function(self, room)
     local roomID = room.id
     self.rooms[roomID] = nil
+end
+
+-- A message was sent to/by this user.
+methods.message = function(self, message)
+    self.messages[#self.messages + 1] = message
+    -- TODO: fire user-specific callback
+end
+
+-- Send a PM to the user.
+methods.send = function(self, message)
+    self.ps:send("|/pm " .. self.id .. "," .. message)
 end
 
 return user
