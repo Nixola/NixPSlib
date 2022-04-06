@@ -1,16 +1,20 @@
 local cqueues = require "cqueues"
 local websocket = require "http.websocket"
 
-local Callbacks = require "callbacks"
-local Utils = require "utils"
-local initCallbacks = require "initCallbacks"
+local modname = ...
+modname = modname:gsub("%.init$", "") -- remove the .init suffix
+if modname ~= "" then modname = modname .. "." end
+
+local Callbacks = require(modname .. "callbacks")
+local Utils = require(modname .. "utils")
+local initCallbacks = require(modname .. "initCallbacks")
 
 local ps = {} -- ps namespace
 local methods = {} -- ps methods
-methods.User = require "user"
-methods.Room = require "room"
-methods.Userlist = require "userlist"
-methods.Message = require "message"
+methods.User = require(modname .. "user")
+methods.Room = require(modname .. "room")
+methods.Userlist = require(modname .. "userlist")
+methods.Message = require(modname .. "message")
 local mt = {__index = methods}
 
 

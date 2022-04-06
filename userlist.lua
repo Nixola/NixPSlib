@@ -1,4 +1,7 @@
-local Utils = require "utils"
+local modname = ...
+modname = modname:gsub("userlist$", "") -- remove the suffix
+
+local Utils = require(modname .. "utils")
 
 -- create a userlist class to store a list of users, indexed by user ID, and able to retrieve them by name
 local methods = {}

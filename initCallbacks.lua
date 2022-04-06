@@ -1,7 +1,9 @@
-local login = require "login"
-local Callbacks = require "callbacks"
-local Message = require "message"
-local Utils = require "utils"
+local modname = ...
+modname = modname:gsub("initCallbacks$", "") -- remove the suffix
+
+local login = require(modname .. "login")
+local Callbacks = require(modname .. "callbacks")
+local Utils = require(modname .. "utils")
 
 local initCallbacks = function(self)
 	self.callbacks = {}

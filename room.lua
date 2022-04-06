@@ -1,5 +1,6 @@
-local utils = require "utils"
-local Callbacks = require "callbacks"
+local modname = ...
+modname = modname:gsub("room$", "") -- remove the suffix
+local Callbacks = require(modname .. "callbacks")
 
 local methods = {}
 local mt = {__index = methods}
