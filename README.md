@@ -12,6 +12,7 @@ Of course, you should then check _their_ dependencies, too.
 The way you're supposed to use this is via [`cqueues`](http://25thandclement.com/~william/projects/cqueues.html), which is a dependency of [`http`](https://github.com/daurnimator/lua-http). You might be able to use it without it, but that's unsupported. Watch me still include a section on how you might be able to do it.
 ### Creating a connection
 ```lua
+local ps = require "ps"
 local client = ps.new(nick, pass[, url[, loop]])
 ```
 The `nick` and `pass` are the credentials for the account you want to connect to. The `url` is the URL of the server you want to connect to. The `loop` is the cqueues event loop you want to use. If you don't specify it, it will create a new one, accessible as `client.loop`.

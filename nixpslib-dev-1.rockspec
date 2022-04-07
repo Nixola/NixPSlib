@@ -1,7 +1,7 @@
 package = "NixPSlib"
 version = "dev-1"
 source = {
-    url = "https://github.com/Nixola/NixPSlib"
+    url = "git://github.com/Nixola/NixPSlib"
 }
 description = {
     summary = "A Lua library to connect to Pokémon Showdown.",
@@ -20,6 +20,14 @@ dependencies = {
 build = {
     type = "builtin",
     modules = {
-        ps = "init.lua",
+        ps = "ps/init.lua",
+        ["ps.callbacks"] = "ps/callbacks.lua",
+        ["ps.initCallbacks"] = "ps/initCallbacks.lua",
+        ["ps.login"] = "ps/login.lua",
+        ["ps.message"] = "ps/message.lua",
+        ["ps.room"] = "ps/room.lua",
+        ["ps.user"] = "ps/user.lua",
+        ["ps.userlist"] = "ps/userlist.lua",
+        ["ps.utils"] = "ps/utils.lua",
     }
 }

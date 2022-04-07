@@ -1,4 +1,4 @@
-local ps = require "init"
+local ps = require "ps"
 local f = io.open("CREDENTIALS", "r")
 local nick = f:read("*l")
 local pass = f:read("*l")
