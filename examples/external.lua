@@ -1,5 +1,5 @@
-local ps = require "NixPSlib.ps"
-local Utils = require "NixPSlib.ps.utils"
+local ps = require "ps"
+local Utils = require "ps.utils"
 local f = io.open("NixPSlib/CREDENTIALS", "r")
 local nick = f:read("*l")
 local pass = f:read("*l")

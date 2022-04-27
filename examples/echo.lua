@@ -1,5 +1,5 @@
 local ps = require "ps"
-local Utils = require "utils"
+local Utils = require "ps.utils"
 local f = io.open("CREDENTIALS", "r")
 local nick = f:read("*l")
 local pass = f:read("*l")
