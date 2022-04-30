@@ -46,7 +46,7 @@ local initCallbacks = function(self)
 	end) 
 
 	self.callbacks.receive:register(function(message, room) -- When a message is received.
-		local command, args = message:match("|([^|]+)(.+)") -- Split the message into command and arguments.
+		local command, args = message:match("|([^|]+)(.*)") -- Split the message into command and arguments.
 		if command and command ~= "" then -- If the message has a command.
 			self.rawCallbacks[command]:fire(room, Utils.split(args)) -- Fire the callback for the command.
 		else -- Otherwise, the message is to be displayed as-is in the room. Possibly a log?
