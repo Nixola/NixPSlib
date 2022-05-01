@@ -7,8 +7,12 @@ local methods = {}
 local mt = {__index = methods}
 
 local user = function(self, name) -- Create a new user.
+    local name, away, status = name:match("^([^!@]+)%@?(%!?)(.*)$")
+    away = away == "!"
     local t = setmetatable({}, mt) -- Create a new user object.
     t.name = name -- Set the user's name.
+    t.status = status
+    t.away = away
     t.id = Utils.userID(name) -- Set the user's ID.
     t.messages = {} -- Create a table to store the chat with the user.
     t.rooms = {} -- Create a table to store the rooms.

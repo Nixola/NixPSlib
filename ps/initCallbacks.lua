@@ -2,6 +2,7 @@ local modname = ...
 modname = modname:gsub("initCallbacks$", "") -- remove the suffix
 
 local login = require(modname .. "login")
+local utf8 = require("utf8")
 local Callbacks = require(modname .. "callbacks")
 local Utils = require(modname .. "utils")
 
@@ -55,8 +56,8 @@ local initCallbacks = function(self)
 	end)
 
 	self.rawCallbacks.updateuser:register(function(room, name, registered, avatar, settings) -- When the user is updated.
+		local rank, name = Utils.parseName(name)
 		self.users:changeName(self.self, name)
-		self.self.name = name -- Set the nick.
 		self.self.id = Utils.userID(name) -- Set the user ID.
 		self.self.registered = registered -- Set the registered status.
 		self.self.loggedIn = true
@@ -70,7 +71,9 @@ local initCallbacks = function(self)
 		timestamp = tonumber(timestamp)
 		-- join the vararg as a string with "|" as the separator
 		local text = table.concat({...}, "|")
-		local sender = self.users:getUser(userID) -- Get the user.
+		local rank, username = Utils.parseName(userID)
+		local sender = self.users:getUser(username) -- Get the user.
+		room:setUserRank(sender, rank)
 		local message = self:Message(text, sender, timestamp, room) -- Create a new message.
 		room:message(message) -- Send the message to the room.
         self.callbacks.chat:fire(message)
@@ -145,7 +148,7 @@ local initCallbacks = function(self)
         for name in userlist:gmatch("[^,]+") do
             -- the first character is the rank, the rest is the name; optionally, the name ends by @ followed by ! if the user is away, then maybe the user status
             -- TODO: this _needs_ to be UTF-8 aware!
-            local rank, name, away, status = name:match("^(.)(.+)@?(%!?)(.*)$")
+			local rank, name, away, status = Utils.parseName(name)
             local user = self.users:getUser(name) -- get the user
             room:join(user, rank, true) -- join the room without firing a callback, as the user already is in the room
             user:join(room)

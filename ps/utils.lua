@@ -1,3 +1,5 @@
+local utf8 = require "utf8"
+
 local utils = {}
 
 utils.split = function(str, sep) -- Split a string by a separator.
@@ -11,6 +13,11 @@ end
 
 utils.userID = function(str) -- Get the user ID from a user's name.
     return str:lower():gsub("%W+", "") -- Return the user ID.
+end
+
+utils.parseName = function(str)
+	local rank, name, away, status = str:match("^(" .. utf8.charpattern .. ")(.+)@?(%!?)(.*)$")
+	return rank, name, away, status
 end
 
 return utils
