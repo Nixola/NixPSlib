@@ -7,7 +7,7 @@ local methods = {}
 local mt = {__index = methods}
 
 local user = function(self, name) -- Create a new user.
-    local name, away, status = name:match("^([^!@]+)%@?(%!?)(.*)$")
+    local name, away, status = name:match("^([^!@]*)%@?(%!?)(.*)$")
     away = away == "!"
     local t = setmetatable({}, mt) -- Create a new user object.
     t.name = name -- Set the user's name.
