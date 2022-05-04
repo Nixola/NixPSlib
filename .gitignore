@@ -1,4 +1,5 @@
 CREDENTIALS
+*.rock
 .luarocks/luarocks
 /lua
 /lua_modules
