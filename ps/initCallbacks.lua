@@ -57,7 +57,11 @@ local initCallbacks = function(self)
 
 	self.rawCallbacks.updateuser:register(function(room, name, registered, avatar, settings) -- When the user is updated.
 		local rank, name = Utils.parseName(name)
-		self.users:changeName(self.self, name)
+		if self.self then
+			self.users:changeName(self.self, name)
+		else
+			self.self = self.users:getUser(name) -- Create a user for the bot.
+		end
 		self.self.id = Utils.userID(name) -- Set the user ID.
 		self.self.registered = registered -- Set the registered status.
 		self.self.loggedIn = true

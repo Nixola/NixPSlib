@@ -4,7 +4,7 @@ local nick = f:read("*l")
 local pass = f:read("*l")
 f:close()
 io.stdout:setvbuf("no") -- Disable stdout buffering; useful for ANSI escape sequences.
-local client = ps.new(nick, pass) -- Create a new client.
+local client = ps.new() -- Create a new client.
 
 client.callbacks.chat:register(function(msg) -- Register a callback for chat messages.
     local roomID = msg.room and msg.room.id or "PM" -- If the message is in a room, use the room's ID. Otherwise, use "PM".
@@ -42,7 +42,7 @@ client.rawCallbacks.updateuser:register(function(_, nick)
     print("Your nickname is", nick) -- The server changed your nickname.
 end)
 
-client:connect() -- Connect to the server.
+client:connect(nick, pass) -- Connect to the server.
 print(client.loop:loop()) -- Start the event loop.
 
 for err in client.loop:errors(1) do

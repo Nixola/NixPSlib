@@ -14,7 +14,7 @@ end
 
 f:close()
 
-local client = ps.new(nick, pass)
+local client = ps.new()
 client.callbacks.chat:register(function(message)
     print(string.format("% -15s", message.sender.name), message.text)
     if not (message.backlog or message.self) then
@@ -26,7 +26,7 @@ client.callbacks.chat:register(function(message)
     end
 end)
 
-client:connect() -- Connect to the server.
+client:connect(nick, pass) -- Connect to the server.
 print(client.loop:loop()) -- Start the event loop.
 
 for err in client.loop:errors(1) do

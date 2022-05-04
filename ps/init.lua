@@ -18,11 +18,10 @@ methods.Message = require(modname .. "message")
 local mt = {__index = methods}
 
 
-ps.new = function(username, password, url, cqueue)
+ps.new = function(url, cqueue)
 	local t = setmetatable({}, mt) -- Create a new ps object.
 	-- should url be that, or just sim.psim.us?
 	t.url = url or "wss://sim3.psim.us/showdown/websocket" -- Set the URL.
-	t.credentials = {nick = username, password = password} -- Set the credentials.
 
 	t.cqueue = cqueue -- Set the cqueue object for the event loop.
 
@@ -51,15 +50,14 @@ ps.new = function(username, password, url, cqueue)
 
 	t.users = t:Userlist() -- Create a userlist.
 
-	t.self = t.users:getUser(t.credentials.nick) -- Create a user for the bot.
-
 	initCallbacks(t) -- Initialize the callbacks.
 
 	return t -- Return the ps object.
 end
 
-methods.connect = function(self, timeout) -- Connect to the server.
+methods.connect = function(self, username, password, timeout) -- Connect to the server.
 	timeout = timeout or 5 -- TODO: make the default timeout configurable
+	self.credentials = {nick = username, password = password} -- Set the credentials.
 	return self.websocket:connect(timeout)
 end
 
