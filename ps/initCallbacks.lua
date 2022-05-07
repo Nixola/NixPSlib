@@ -79,6 +79,7 @@ local initCallbacks = function(self)
 		local sender = self.users:getUser(username) -- Get the user.
 		room:setUserRank(sender, rank)
 		local message = self:Message(text, sender, timestamp, room) -- Create a new message.
+		message.senderName = userID
 		room:message(message) -- Send the message to the room.
         self.callbacks.chat:fire(message)
 	end)
@@ -101,7 +102,8 @@ local initCallbacks = function(self)
 		local recipient = self.users:getUser(recipientID) -- Get the recipient.
 
 		local message = self:Message(text, sender, os.time(), nil, recipient) -- Create a new message.
-
+		message.senderName = message.self and recipientID or senderID
+		
 		if message.self then -- If the sender is the user.
 			recipient:message(sender, os.time(), message)
 		else
