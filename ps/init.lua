@@ -31,19 +31,6 @@ ps.new = function(url, cqueue)
 
 	t.loop = cqueue or cqueues.new()
 
-	t.loop:wrap(function() -- Create a timer for sending messages.
-		while true do
-			t:rawSend() -- Send the message and remove it from the queue.
-			cqueues.sleep(t.queue.timeout) -- Timeout to prevent being throttled.
-		end
-	end)
-
-	t.loop:wrap(function()
-		while true do
-			t:rawReceive() -- Receive a message bundle from the server.
-		end
-	end)
-
 	t.websocket = websocket.new_from_uri(t.url) -- Create a websocket.
 
 	t.rooms = {} -- Create a rooms table.
@@ -58,7 +45,20 @@ end
 methods.connect = function(self, username, password, timeout) -- Connect to the server.
 	timeout = timeout or 5 -- TODO: make the default timeout configurable
 	self.credentials = {nick = username, password = password} -- Set the credentials.
-	return self.websocket:connect(timeout)
+	self.websocket:connect(timeout)
+
+	self.loop:wrap(function() -- Create a timer for sending messages.
+		while true do
+			self:rawSend() -- Send the message and remove it from the queue.
+			cqueues.sleep(self.queue.timeout) -- Timeout to prevent being throttled.
+		end
+	end)
+
+	self.loop:wrap(function()
+		while true do
+			self:rawReceive() -- Receive a message bundle from the server.
+		end
+	end)
 end
 
 methods.send = function(self, str) -- Send a message to the server.
