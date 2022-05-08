@@ -28,8 +28,8 @@ end
 methods.changeName = function(self, user, newName)
     local oldUserID = user.id
     local newUserID = user:changeName(newName)
-    self.users[newUserID] = user
     self.users[oldUserID] = nil
+    self.users[newUserID] = user
 end
 
 return userlist
