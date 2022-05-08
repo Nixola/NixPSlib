@@ -16,7 +16,7 @@ utils.userID = function(str) -- Get the user ID from a user's name.
 end
 
 utils.parseName = function(str)
-	local rank, name, away, status = str:match("^(" .. utf8.charpattern .. ")(.+)@?(%!?)(.*)$")
+	local rank, name, away, status = str:match("^(" .. utf8.charpattern .. ")([^@]+)@?(%!?)(.-)$")
 	return rank, name, away, status
 end
 
