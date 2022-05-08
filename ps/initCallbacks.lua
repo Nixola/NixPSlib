@@ -102,7 +102,7 @@ local initCallbacks = function(self)
 		local recipient = self.users:getUser(recipientID) -- Get the recipient.
 
 		local message = self:Message(text, sender, os.time(), nil, recipient) -- Create a new message.
-		message.senderName = message.self and recipientID or senderID
+		message.senderName = senderID
 		
 		if message.self then -- If the sender is the user.
 			recipient:message(sender, os.time(), message)
