@@ -48,11 +48,10 @@ end
 local login = function(client) -- attempt to login
 	return function(room, ...)
 		local t = {} -- create a table to store the parameters
-		t.act  = "login" -- set the action to login
 	    t.name = client.credentials.nick -- set the nick
 		t.pass     = client.credentials.password -- set the password
 		t.challstr = table.concat({...}, "|") -- set the challenge string
-	    local data, body = post("https://play.pokemonshowdown.com/action.php", t) -- perform the POST login request
+	    local data, body = post("https://play.pokemonshowdown.com/api/login", t) -- perform the POST login request
 	    if data:sub(1, 1) ~= "]" then -- if the login failed
 	    	print("Error. Aborting.")
 	    	print(data)
