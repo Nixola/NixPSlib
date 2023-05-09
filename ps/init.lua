@@ -43,12 +43,19 @@ ps.new = function(url, cqueue)
 	return t -- Return the ps object.
 end
 
-methods.connect = function(self, username, password, cookie, timeout) -- Connect to the server.
-	if type(cookie) == "number" then
-		timeout = cookie
+methods.connect = function(self, username, password, ...) -- Connect to the server.
+	local cookie, timeout, out
+	for i, v in ipairs{...} do
+		if type(v) == "number" then
+			timeout = v
+		elseif type(v) == "string" then
+			cookie = v
+		elseif type(v) == "table" then
+			out = v
+		end
 	end
 	timeout = timeout or 5 -- TODO: make the default timeout configurable
-	login.setCredentials(username, password, cookie) -- Set the credentials.
+	login.setCredentials(username, password, cookie, out) -- Set the credentials.
 	self.websocket:connect(timeout)
 
 	self.loop:wrap(function() -- Create a timer for sending messages.
