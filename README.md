@@ -13,15 +13,16 @@ The way you're supposed to use this is via [`cqueues`](http://25thandclement.com
 ### Creating a connection
 ```lua
 local ps = require "ps"
-local client = ps.new(nick, pass[, url[, loop]])
+local client = ps.new([url[, loop]])
 ```
-The `nick` and `pass` are the credentials for the account you want to connect to. The `url` is the URL of the server you want to connect to. The `loop` is the cqueues event loop you want to use. If you don't specify it, it will create a new one, accessible as `client.loop`.
+The `url` is the URL of the server you want to connect to. The `loop` is the cqueues event loop you want to use. If you don't specify it, it will create a new one, accessible as `client.loop`.
 
 ### Actually starting the connection
 ```lua
-client:connect()
+client:connect(nick, pass[, timeout])
 client.loop:loop()
 ```
+`nick` and `pass` are the credentials of the account you want to log in with. `timeout` is the timeout for the connection, in seconds. It defaults to 5.
 This will start the connection and start the cqueues loop. `:loop()` will block until the connection is closed, so you need to handle anything else you might want to do using `cqueues`. Or you might want to avoid `cqueues` entirely, as mentioned above.
 
 ### Callbacks
