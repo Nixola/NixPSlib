@@ -1,5 +1,5 @@
 local fakeFile = function(str) -- create a fake file, storing the contents in a string, mocking the io library
-	local file = {cursor = 0, content = str}
+	local file = {cursor = 0, content = str or ""}
 	function file:read(arg)
 		local eof
 		if cursor >= #self.content then
