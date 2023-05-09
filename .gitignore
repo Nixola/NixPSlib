@@ -1,4 +1,5 @@
 CREDENTIALS
+COOKIES
 *.rock
 .luarocks/luarocks
 /lua
