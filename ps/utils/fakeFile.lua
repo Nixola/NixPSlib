@@ -1,6 +1,7 @@
 local fakeFile = function(str) -- create a fake file, storing the contents in a string, mocking the io library
 	local file = {cursor = 0, content = str or ""}
 	function file:read(arg)
+		arg = arg or "l"
 		local eof
 		if self.cursor >= #self.content then
 			eof = true
@@ -11,16 +12,16 @@ local fakeFile = function(str) -- create a fake file, storing the contents in a 
 			local str = self.content:sub(self.cursor, self.cursor + arg - 1)
 			self.cursor = math.min(self.cursor + arg, #self.content)
 			return str
-		elseif (type(arg) ~= "string") and (arg ~= nil) then -- bad argument
+		elseif (type(arg) ~= "string") then -- bad argument
 			error("bad argument #1 to 'read' (number or string expected, got " .. type(arg) .. ")")
-		elseif arg:match("^%*?a") then -- read the entire file from the current position
-			local str = self.content:sub(self.cursor)
-			self.cursor = #self.content
-			return str
-		elseif arg:match("^%*?l") or (arg == nil) then -- read a line from the current position
+		elseif arg:match("^%*?l") then -- read a line from the current position
 			if eof then return nil end
 			local str = self.content:sub(self.cursor, self.content:find("\n", self.cursor) - 1)
 			self.cursor = math.min(self.content:find("\n", self.cursor) + 1, #self.content)
+			return str
+		elseif arg:match("^%*?a") then -- read the entire file from the current position
+			local str = self.content:sub(self.cursor)
+			self.cursor = #self.content
 			return str
 		elseif arg:match("^%*?L") then -- read a line from the current position, including the newline
 			if eof then return nil end
