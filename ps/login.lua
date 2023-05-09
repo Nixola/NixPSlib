@@ -45,11 +45,19 @@ local post = function(url, body) -- perform a POST request
 	return body -- return the request result
 end
 
-local login = function(client) -- attempt to login
+local login = {} 
+local credentials = {} -- create a table to store the credentials
+login.setCredentials = function(username, password, cookie) -- Provide a private way to set the credentials
+	credentials.username = username
+	credentials.password = password
+	credentials.cookie = cookie
+end
+
+setmetatable(login, {__call = function(self, client) -- attempt to login
 	return function(room, ...)
 		local t = {} -- create a table to store the parameters
-	    t.name = client.credentials.nick -- set the nick
-		t.pass     = client.credentials.password -- set the password
+	    t.name = credentials.username -- set the nick
+		t.pass     = credentials.password -- set the password
 		t.challstr = table.concat({...}, "|") -- set the challenge string
 	    local data, body = post("https://play.pokemonshowdown.com/api/login", t) -- perform the POST login request
 	    if data:sub(1, 1) ~= "]" then -- if the login failed
@@ -67,6 +75,6 @@ local login = function(client) -- attempt to login
 			os.exit(-1)
 		end
  	end
-end
+end})
 
-return login -- return the login function
+return login -- return the login function and the setCredentials function

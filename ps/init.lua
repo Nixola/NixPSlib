@@ -8,6 +8,7 @@ if modname ~= "" then modname = modname .. "." end
 local Callbacks = require(modname .. "callbacks")
 local Utils = require(modname .. "utils")
 local initCallbacks = require(modname .. "initCallbacks")
+local login = require(modname .. "login")
 
 local ps = {} -- ps namespace
 local methods = {} -- ps methods
@@ -42,9 +43,12 @@ ps.new = function(url, cqueue)
 	return t -- Return the ps object.
 end
 
-methods.connect = function(self, username, password, timeout) -- Connect to the server.
+methods.connect = function(self, username, password, cookie, timeout) -- Connect to the server.
+	if type(cookie) == "number" then
+		timeout = cookie
+	end
 	timeout = timeout or 5 -- TODO: make the default timeout configurable
-	self.credentials = {nick = username, password = password} -- Set the credentials.
+	login.setCredentials(username, password, cookie) -- Set the credentials.
 	self.websocket:connect(timeout)
 
 	self.loop:wrap(function() -- Create a timer for sending messages.
