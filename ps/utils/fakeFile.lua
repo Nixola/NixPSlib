@@ -2,7 +2,7 @@ local fakeFile = function(str) -- create a fake file, storing the contents in a 
 	local file = {cursor = 0, content = str or ""}
 	function file:read(arg)
 		local eof
-		if cursor >= #self.content then
+		if self.cursor >= #self.content then
 			eof = true
 		end
 
