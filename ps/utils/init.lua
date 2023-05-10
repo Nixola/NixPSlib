@@ -8,7 +8,7 @@ utils.split = function(str, sep) -- Split a string by a separator.
 	for c in str:gmatch("([^" .. sep .. "]+)") do -- Loop through the string.
 		t[#t+1] = c -- Add the current result to the table.
 	end
-	return unpack(t)
+	return (unpack or table.unpack)(t)
 end
 
 utils.userID = function(str) -- Get the user ID from a user's name.
