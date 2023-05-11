@@ -6,6 +6,8 @@ f:close()
 io.stdout:setvbuf("no") -- Disable stdout buffering; useful for ANSI escape sequences.
 local client = ps.new() -- Create a new client.
 
+assert(pcall(require, "socket"), "LuaSocket is required for this specific example. For keyboard input, of all things. Go figure.")
+
 client.callbacks.chat:register(function(msg) -- Register a callback for chat messages.
     local roomID = msg.room and msg.room.id or "PM" -- If the message is in a room, use the room's ID. Otherwise, use "PM".
     roomID = "#" .. roomID
