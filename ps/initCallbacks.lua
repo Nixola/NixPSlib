@@ -115,7 +115,6 @@ local initCallbacks = function(self)
 	-- register a callback for the "j" command, taking as arguments the room and user ID
 	self.rawCallbacks["j"]:register(function(room, userID)
 		local user = self.users:getUser(userID) -- Get the user.
-		local room = self.rooms[roomID] -- Get the room.
 		room:join(user) -- Join the room.
 		user:join(room)
 		self.callbacks.join:fire(user, room) -- Fire the join callback.
@@ -124,7 +123,6 @@ local initCallbacks = function(self)
 	-- register a callback for the "l" command, taking as arguments the room and user ID
 	self.rawCallbacks["l"]:register(function(room, userID)
 		local user = self.users:getUser(userID) -- Get the user.
-		local room = self.rooms[roomID] -- Get the room.
 		room:leave(user) -- Leave the room.
 		user:leave(room)
 		self.callbacks.leave:fire(user, room) -- Fire the leave callback.
