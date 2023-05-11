@@ -1,15 +1,17 @@
 # NixPSlib
 This is a Lua library to connect to [Pokémon Showdown](https://play.pokemonshowdown.com). I'm sure I'll come up with something else to say about it. Being just a connection library it doesn't really do anything on its own, though a couple of examples are included.
 ## Dependencies
-Dependencies should be handled by LuaRocks. Though you can't install this library with LuaRocks yet. I'll work on it. Anyway, if you want to use this without LuaRocks and don't want to check the .rockspec file for the dependencies, it depends on the following rocks:
+Dependencies should be handled by LuaRocks. A .rockspec file is included, but here are the dependencies anyway:
 
+* `cqueues`
 * `http`  
 * `rapidjson`  
 
-Of course, you should then check _their_ dependencies, too.
+Additionally, one of the example scripts `examples/interact.lua` requires LuaSocket.
 
 ## Usage
-The way you're supposed to use this is via [`cqueues`](http://25thandclement.com/~william/projects/cqueues.html), which is a dependency of [`http`](https://github.com/daurnimator/lua-http). You might be able to use it without it, but that's unsupported. Watch me still include a section on how you might be able to do it.
+The way you're supposed to use this is via [`cqueues`](http://25thandclement.com/~william/projects/cqueues.html), which is a dependency of [`http`](https://github.com/daurnimator/lua-http).
+
 ### Creating a connection
 ```lua
 local ps = require "ps"
@@ -19,11 +21,13 @@ The `url` is the URL of the server you want to connect to. The `loop` is the cqu
 
 ### Actually starting the connection
 ```lua
-client:connect(nick, pass[, timeout])
+client:connect(nick, pass[, timeout, cookies, out])
 client.loop:loop()
 ```
-`nick` and `pass` are the credentials of the account you want to log in with. `timeout` is the timeout for the connection, in seconds. It defaults to 5.
-This will start the connection and start the cqueues loop. `:loop()` will block until the connection is closed, so you need to handle anything else you might want to do using `cqueues`. Or you might want to avoid `cqueues` entirely, as mentioned above.
+`nick` and `pass` are the credentials of the account you want to log in with. `timeout` is the timeout for the connection, in seconds. It defaults to 5.  
+`cookies` lets you provide a cookie store (as a string) containing valid login cookies, in order to log in via upkeep instead of performing a full login. Said cookie store is obtained via the `out` arugment.  
+`out` should be a local, empty table. On login, the received cookie and the login method used (`"upkeep"` or `"login"`) will be set in the `cookies` and `action` fields, respectively. This is done before sending a `/trn`, so the `updateuser` raw callback can be used to retrieve the data. I'll probably add a proper callback in the client callbacks, but this data will still be passed via this table.
+This will start the connection and start the cqueues loop. `:loop()` will block until the connection is closed, so you need to handle anything else you might want to do using `cqueues`.
 
 ### Callbacks
 In order to react to stuff happening on the server (which, if you're writing anything that uses this library, you're probably doing), you need to register callbacks for various events.  
@@ -75,9 +79,6 @@ The Message object represents a message. It has the following properties:
 * `self`: a boolean representing whether the message was sent by the user themselves
 The `reply` method can be used to reply to the message, automatically sending a private message if the message is private or a room message otherwise.
 
-### Use without cqueues
-As promised, here's a section that might help you do something entirely unsupported. Still, open an issue if something's wrong. I might want to look into it. I'm not sure if I'll ever do that.  
-The two things you need to handle yourself when not using a `cqueues` loop are sending and receiving messages. You'll need to periodically call `ps:rawReceive(timeout)`, which is blocking if you do not provide a timeout, to let the client poll for messages, and you'll need to periodically call `ps:rawSend()` to send messages. When sending, you don't want to exceed 3 messages per second if the user isn't trusted, or 10 if it is. The library usually handles ratelimiting on its own but, well, you're into unsupported territory.
 
 ## Todo
 * Battles
