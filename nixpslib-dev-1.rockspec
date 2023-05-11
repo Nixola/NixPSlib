@@ -10,12 +10,13 @@ description = {
         Ideally, this lib could be used to write a bot or client for Pokémon Showdown
         without any knowledge of the protocol at all.
     ]],
-    homepage = "http://...", -- We don't have one yet
-    license = "none yet" -- or whatever you like
+    homepage = "http://github.com/Nixola/NixPSlib", -- We don't have one yet
+    license = "zlib" -- or whatever you like
 }
 dependencies = {
     "http",
     "rapidjson",
+    "cqueues",
 }
 build = {
     type = "builtin",
@@ -28,6 +29,7 @@ build = {
         ["ps.room"] = "ps/room.lua",
         ["ps.user"] = "ps/user.lua",
         ["ps.userlist"] = "ps/userlist.lua",
-        ["ps.utils"] = "ps/utils.lua",
+        ["ps.utils"] = "ps/utils/init.lua",
+        ["ps.utils.fakeFile"] = "ps/utils/fakeFile.lua",
     }
 }
