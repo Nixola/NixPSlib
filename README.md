@@ -77,6 +77,7 @@ The Message object represents a message. It has the following properties:
 * `timestamp`: the time the message was sent
 * `backlog`: a boolean representing whether the message is a backlog message, sent before the room was joined
 * `self`: a boolean representing whether the message was sent by the user themselves
+
 The `reply` method can be used to reply to the message, automatically sending a private message if the message is private or a room message otherwise.
 
 
