@@ -26,7 +26,7 @@ client.loop:loop()
 ```
 `nick` and `pass` are the credentials of the account you want to log in with. `timeout` is the timeout for the connection, in seconds. It defaults to 5.  
 `cookies` lets you provide a cookie store (as a string) containing valid login cookies, in order to log in via upkeep instead of performing a full login. Said cookie store is obtained via the `out` arugment.  
-`out` should be a local, empty table. On login, the received cookie and the login method used (`"upkeep"` or `"login"`) will be set in the `cookies` and `action` fields, respectively. This is done before sending a `/trn`, so the `updateuser` raw callback can be used to retrieve the data. I'll probably add a proper callback in the client callbacks, but this data will still be passed via this table.
+`out` should be a local, empty table. On login, the contents of a cookie store containing the received cookie and the login method used (`"upkeep"` or `"login"`) will be set in the `cookies` and `action` fields, respectively. This is done before sending `/trn` completing the authentication process, so the `updateuser` raw callback can be used to retrieve the data. I'll probably add a proper callback in the client callbacks, but this data will still be passed via this table.
 This will start the connection and start the cqueues loop. `:loop()` will block until the connection is closed, so you need to handle anything else you might want to do using `cqueues`.
 
 ### Callbacks
